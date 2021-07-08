@@ -15,13 +15,13 @@ exports.userSchema = () => {
 	const schema = Joi.object({
 		name: Joi.string()
 			.trim()
-			.alphanum()
+			// .alphanum()
 			.min(3)
 			.max(50)
 			.required()
 			.messages({
 				'string.base': `${labels.name} should be a type of 'text'.`,
-				'string.alphanum': `${labels.name} must be alpha numeric only.`,
+				// 'string.alphanum': `${labels.name} must be alpha numeric only.`,
 				'string.empty': `${labels.name} should not be empty.`,
 				'string.min': `${labels.name} must contain min {#limit} chars.`,
 				'string.max': `${labels.name} should not have more than {#limit} chars.`,

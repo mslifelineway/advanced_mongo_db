@@ -1,5 +1,5 @@
 const { saveCountry } = require('../controllers/countryController');
-const { validateSchema } = require('../middlewares/countryMiddleware');
+const { validateSchema, isCountryAlreadyExists } = require('../middlewares/countryMiddleware');
 
 module.exports = (router) => {
 	router.get('/country', (req, res) => {

@@ -13,18 +13,17 @@ exports.userSchemaObj = {
 		min: 6,
 		max: 50,
 		trim: true,
+		unique: true,
+		index: true,
 	},
 	password: {
 		type: String,
 		required: true,
-		min: 8,
-		max: 15,
 		trim: true,
 	},
 	phoneNumber: {
-		type: Number,
+		type: String,
 		required: true,
-		min: 10,
 		trim: true,
 	},
 	dob: {
