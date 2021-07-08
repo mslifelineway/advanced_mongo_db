@@ -3,4 +3,4 @@ const { brandSchemaObj } = require('../schemas/brand');
 
 const brandSchema = new mongoose.Schema(brandSchemaObj, { versionKey: false, timeStamps: true });
 
-module.exports = mongoose.model('users', brandSchema);
+module.exports = mongoose.model('brands', brandSchema);

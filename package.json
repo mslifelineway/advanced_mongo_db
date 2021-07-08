@@ -17,6 +17,8 @@
     "express-validator": "^6.12.0",
     "fs": "0.0.1-security",
     "joi": "^17.4.0",
+    "joi-objectid": "^3.0.1",
+    "joi-phone-number": "^5.0.1",
     "mongoose": "^5.13.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.9",

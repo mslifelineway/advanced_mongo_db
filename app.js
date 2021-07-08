@@ -22,8 +22,10 @@ fs.readdirSync(__dirname + '/src/routes').forEach(function (file) {
 
 app.listen(port, host, (err) => {
 	if (err) {
-		console.log('\n##### server not started due to : ', err);
+	console.log('\n--------------------------------------------------');
+		console.log('\tserver not started due to : ', err);
 		process.exit(1);
 	}
-	console.log('\n\n################ Server is listening on port *' + port);
+	console.log('\n--------------------------------------------------');
+	console.log('\tServer is listening on port *' + port);
 });

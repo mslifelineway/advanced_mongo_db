@@ -2,16 +2,21 @@ exports.countrySchemaObj = {
 	name: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
+		unique: true,
+		index: true,
 	},
 	code: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
+		length: 2,
+		unique: true,
+		index: true,
 	},
 	flag: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 	},
 };
