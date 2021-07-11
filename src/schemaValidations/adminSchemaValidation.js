@@ -1,8 +1,6 @@
 const Joi = require("joi");
-const { errors } = require("../utls/constants");
-const joiPhoneNumber = Joi.extend(require("joi-phone-number"));
 Joi.objectId = require("joi-objectid")(Joi);
-exports.userSchema = () => {
+exports.adminSchema = () => {
   const labels = {
     name: "Name",
     email: "Email",
@@ -15,13 +13,11 @@ exports.userSchema = () => {
   const schema = Joi.object({
     name: Joi.string()
       .trim()
-      // .alphanum()
       .min(3)
       .max(50)
       .required()
       .messages({
         "string.base": `${labels.name} should be a type of 'text'.`,
-        // 'string.alphanum': `${labels.name} must be alpha numeric only.`,
         "string.empty": `${labels.name} should not be empty.`,
         "string.min": `${labels.name} must contain min {#limit} chars.`,
         "string.max": `${labels.name} should not have more than {#limit} chars.`,
@@ -102,29 +98,9 @@ exports.userSchema = () => {
   return schema;
 };
 
-exports.validatePhoneNumberWithCountry = (
-  phoneNumber,
-  country,
-  format = "international"
-) => {
-  const { error, value } = joiPhoneNumber
-    .string()
-    .phoneNumber({
-      defaultCountry: `${country}`,
-      format: `${format}`,
-      strict: true,
-    })
-    .validate(`${phoneNumber}`);
-
-  return {
-    error: error ? errors.invalidPhoneNumber : undefined,
-    phone_number: value,
-  };
-};
-
-exports.updateUserSchema = () => {
+exports.updateAdminSchema = () => {
   const labels = {
-    id: "User Id",
+    id: "Admin Id",
     name: "Name",
     phoneNumber: "Phone Number",
     country: "Country",

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
-const { userSchemaObj } = require("../schemas/user");
+const { adminSchemaObj } = require("../schemas/admin");
 const bcrypt = require("bcryptjs");
 const { schemaOptions } = require("../helpers/helpers");
 
-const userSchema = new mongoose.Schema(userSchemaObj, schemaOptions);
+const adminSchema = new mongoose.Schema(adminSchemaObj, schemaOptions);
 
-userSchema.pre("save", async function save(next) {
+adminSchema.pre("save", async function save(next) {
   if (!this.isModified("password")) return next();
   try {
     const salt = await bcrypt.genSalt(10);
@@ -16,8 +16,8 @@ userSchema.pre("save", async function save(next) {
   }
 });
 
-userSchema.methods.validatePassword = async function validatePassword(data) {
+adminSchema.methods.validatePassword = async function validatePassword(data) {
   return bcrypt.compare(data, this.password);
 };
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("admins", adminSchema);

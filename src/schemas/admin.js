@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-exports.userSchemaObj = {
+exports.adminSchemaObj = {
   name: {
     type: String,
     required: true,

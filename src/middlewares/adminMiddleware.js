@@ -1,19 +1,22 @@
 const {
-  userSchema,
   validatePhoneNumberWithCountry,
-  updateUserSchema,
 } = require("../schemaValidations/userSchemaValidation");
 const { findCountryCodeById } = require("../services/countryService");
-const { findCountryByUserId } = require("../services/userService");
+const { findCountryByAdminId } = require("../services/adminService");
 const { errors, statusCodes, messages } = require("../utls/constants");
+const {
+  adminSchema,
+  updateAdminSchema,
+} = require("../schemaValidations/adminSchemaValidation");
 exports.validateSchema = async (req, res, next) => {
   try {
-    await userSchema().validateAsync(req.body);
+    await adminSchema().validateAsync(req.body);
     const country = await findCountryCodeById(req.body.country);
     if (!country)
       return res
         .status(statusCodes.badRequest)
         .json({ message: messages.countryNotExists });
+
     const { error: error1, phone_number } = validatePhoneNumberWithCountry(
       req.body.phoneNumber,
       country.code
@@ -53,20 +56,20 @@ exports.checkReqiuredDataToUpdate = async (req, res, next) => {
 exports.validateUpdateSchema = async (req, res, next) => {
   try {
     req.body.id = req.params.id;
-    await updateUserSchema().validateAsync(req.body);
+    await updateAdminSchema().validateAsync(req.body);
 
     if (req.body.phoneNumber) {
       let country;
       if (req.body.country) {
         country = await findCountryCodeById(req.body.country);
       } else {
-        const user = await findCountryByUserId(req.body.id);
-        if (!user) {
+        const admin = await findCountryByAdminId(req.body.id);
+        if (!admin) {
           return res
             .status(statusCodes.badRequest)
-            .json({ error: messages.userNotExists });
+            .json({ error: messages.adminNotExists });
         }
-        country = user.country;
+        country = admin.country;
       }
 
       if (!country)

@@ -1,23 +1,23 @@
 const { _copy } = require("../helpers/helpers");
-const { UserModel } = require("../models");
+const { AdminModel } = require("../models");
 const { statusCodes, messages, errors } = require("../utls/constants");
 
-exports.saveUser = async (req, res) => {
+exports.saveAdmin = async (req, res) => {
   try {
-    const savedUser = await new UserModel(req.body).save();
-    if (savedUser) {
+    const savedAdmin = await new AdminModel(req.body).save();
+    if (savedAdmin) {
       return res
         .status(statusCodes.created)
-        .json({ message: messages.userCreated, user: _copy(savedUser) });
+        .json({ message: messages.adminCreated, admin: _copy(savedAdmin) });
     }
     return res
       .status(statusCodes.badRequest)
-      .json({ error: messages.userNotCreated });
+      .json({ error: messages.adminNotCreated });
   } catch (e) {
     if (e && e.code === 11000) {
       return res
         .status(statusCodes.success)
-        .json({ message: messages.userAlreadyExists });
+        .json({ message: messages.adminAlreadyExists });
     }
     return res
       .status(statusCodes.badRequest)
@@ -25,20 +25,20 @@ exports.saveUser = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateAdmin = async (req, res) => {
   try {
-    const updatedUser = await UserModel.findOneAndUpdate(
+    const updatedAdmin = await AdminModel.findOneAndUpdate(
       { _id: req.body.id },
       req.body
     );
-    if (updatedUser) {
+    if (updatedAdmin) {
       return res
         .status(statusCodes.success)
-        .json({ message: messages.userUpdated, user: _copy(updatedUser) });
+        .json({ message: messages.adminUpdated, admin: _copy(updatedAdmin) });
     }
     return res
       .status(statusCodes.badRequest)
-      .json({ error: messages.userNotUpdated });
+      .json({ error: messages.adminNotExists });
   } catch (e) {
     return res
       .status(statusCodes.badRequest)
