@@ -1,4 +1,4 @@
-const { saveAdmin, updateAdmin } = require("../controllers/adminController");
+const { saveAdmin, updateAdmin, getAdminById } = require("../controllers/adminController");
 const {
   validateSchema,
   validateUpdateSchema,
@@ -13,5 +13,6 @@ module.exports = (router) => {
     validateUpdateSchema,
     updateAdmin
   );
+  router.get("/admin/:id", getAdminById);
   return router;
 };

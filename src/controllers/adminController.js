@@ -19,9 +19,12 @@ exports.saveAdmin = async (req, res) => {
         .status(statusCodes.success)
         .json({ message: messages.adminAlreadyExists });
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: e.toString(), message: errors.somethingSeemsWrong });
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
   }
 };
 
@@ -40,8 +43,33 @@ exports.updateAdmin = async (req, res) => {
       .status(statusCodes.badRequest)
       .json({ error: messages.adminNotExists });
   } catch (e) {
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
+  }
+};
+
+exports.getAdminById = async (req, res) => {
+  try {
+    const admin = await AdminModel.findOne({ _id: req.params.id });
     return res
-      .status(statusCodes.badRequest)
-      .json({ error: e.toString(), message: errors.somethingSeemsWrong });
+      .status(statusCodes.success)
+      .json({ message: messages.adminFetched, admin: _copy(admin) });
+  } catch (e) {
+    const { path } = e;
+    if (path) {
+      return res
+        .status(statusCodes.badRequest)
+        .json({ error: messages.invalidAdminId });
+    }
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
   }
 };

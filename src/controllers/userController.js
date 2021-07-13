@@ -19,9 +19,12 @@ exports.saveUser = async (req, res) => {
         .status(statusCodes.success)
         .json({ message: messages.userAlreadyExists });
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: e.toString(), message: errors.somethingSeemsWrong });
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
   }
 };
 
@@ -40,8 +43,47 @@ exports.updateUser = async (req, res) => {
       .status(statusCodes.badRequest)
       .json({ error: messages.userNotUpdated });
   } catch (e) {
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
+  }
+};
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({});
     return res
-      .status(statusCodes.badRequest)
-      .json({ error: e.toString(), message: errors.somethingSeemsWrong });
+      .status(statusCodes.success)
+      .json({ users: _copy(users), message: messages.allUsersFetched });
+  } catch (e) {
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
+  }
+};
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ _id: req.params.id });
+    return res
+      .status(statusCodes.success)
+      .json({ users: _copy(user), message: messages.userFetched });
+  } catch (e) {
+    const { path } = e;
+    if (path) {
+      return res
+        .status(statusCodes.badRequest)
+        .json({ error: messages.invalidUserId });
+    }
+    return res.status(statusCodes.badRequest).json({
+      error:
+        e.toString() && e.toString() !== ""
+          ? e.toString()
+          : errors.somethingSeemsWrong,
+    });
   }
 };

@@ -2,8 +2,14 @@ const mongoose = require("mongoose");
 const { userSchemaObj } = require("../schemas/user");
 const bcrypt = require("bcryptjs");
 const { schemaOptions } = require("../helpers/helpers");
-
-const userSchema = new mongoose.Schema(userSchemaObj, schemaOptions);
+const toJson = {
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.password;
+    },
+  },
+};
+const userSchema = new mongoose.Schema(userSchemaObj, toJson, schemaOptions);
 
 userSchema.pre("save", async function save(next) {
   if (!this.isModified("password")) return next();

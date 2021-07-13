@@ -1,4 +1,9 @@
-const { saveUser, updateUser } = require("../controllers/userController");
+const {
+  saveUser,
+  updateUser,
+  getAllUsers,
+  getUserById,
+} = require("../controllers/userController");
 const {
   validateSchema,
   validateUpdateSchema,
@@ -13,5 +18,7 @@ module.exports = (router) => {
     validateUpdateSchema,
     updateUser
   );
+  router.get("/users", getAllUsers);
+  router.get("/user/:id", getUserById);
   return router;
 };

@@ -2,8 +2,14 @@ const mongoose = require("mongoose");
 const { adminSchemaObj } = require("../schemas/admin");
 const bcrypt = require("bcryptjs");
 const { schemaOptions } = require("../helpers/helpers");
-
-const adminSchema = new mongoose.Schema(adminSchemaObj, schemaOptions);
+const toJson = {
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.password;
+    },
+  },
+};
+const adminSchema = new mongoose.Schema(adminSchemaObj, toJson, schemaOptions);
 
 adminSchema.pre("save", async function save(next) {
   if (!this.isModified("password")) return next();
