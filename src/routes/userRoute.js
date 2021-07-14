@@ -1,12 +1,17 @@
-const { register } = require('../controllers/user');
-const { validateNewRegister } = require('../middlewares/user');
+const { saveUser, updateUser } = require("../controllers/userController");
+const {
+  validateSchema,
+  validateUpdateSchema,
+  checkReqiuredDataToUpdate,
+} = require("../middlewares/userMiddleware");
 
 module.exports = (router) => {
-	router.get('/users', (req, res) => {
-		console.log('getting the users');
-		res.send({ message: 'users' });
-	});
-	router.post('/user/register', validateNewRegister, register);
-
-	return router;
+  router.post("/user/register", validateSchema, saveUser);
+  router.patch(
+    "/user/:id/update",
+    checkReqiuredDataToUpdate,
+    validateUpdateSchema,
+    updateUser
+  );
+  return router;
 };

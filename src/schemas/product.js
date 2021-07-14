@@ -1,25 +1,26 @@
+const mongoose = require('mongoose');
 exports.productSchemaObj = {
 	name: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 		min: 3,
 		max: 100,
 	},
 	quantity: {
 		type: Number,
-		require: true,
+		required: true,
 		min: 1,
 	},
 	uom: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 	},
 	slug: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 		min: 3,
 		unique: true,
 		index: true,
@@ -27,7 +28,7 @@ exports.productSchemaObj = {
 	sku: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 		min: 3,
 		unique: true,
 		index: true,
@@ -78,12 +79,12 @@ exports.productSchemaObj = {
 	created_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'admins',
-		require: true,
+		required: true,
 	},
 	updated_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'admins',
-		require: true,
+		required: true,
 	},
 	brand: {
 		type: mongoose.Schema.Types.ObjectId,

@@ -1,0 +1,48 @@
+exports.statusCodes = {
+  success: 200,
+  created: 201,
+  noContent: 204,
+  badRequest: 400,
+  unauthorized: 401,
+  forbidden: 402,
+  notFound: 404,
+  methodsNotAllowed: 405,
+  lengthRequired: 411,
+  uriTooLarge: 414,
+  unsupportedMediaType: 415,
+  internalServerError: 500,
+  notImplemented: 501,
+  badGateway: 502,
+  serviceUnavailable: 503,
+  gatewayTimeout: 504,
+};
+exports.errors = {
+  invalidPhoneNumber: "Invalid phone number!",
+  somethingSeemsWrong: "Oops! something seems wrong.",
+  somethingWentWrong: "Oops! something went wrong.",
+};
+exports.messages = {
+  countrySaved: "Country added successfully!",
+  countryNotSaved: "Country coud not saved!",
+  countryAlreadyExists: "Country already exists!",
+  countryNotExists: "Country does not exists!",
+  countryExistsByCode: "Country code already exists! Please check the details.",
+  userCreated: "User created successfully!",
+  userNotCreated: "User could not created!",
+  userAlreadyExists: "User already exists!",
+  userNotExists: "User not exists!",
+  userUpdated: "User details updated successfully!",
+  userNotUpdated: "User could not updated!",
+  phoneNumberNeedToBeUpdated:
+    "Phone need to be updated while updating the country",
+  adminNotExists: "Admin not exists!",
+  adminCreated: "Admin created successfully!",
+  adminNotCreated: "Admin could not created!",
+  adminAlreadyExists: "Admin already exists!",
+  adminNotExists: "Admin not exists!",
+  adminUpdated: "Admin details updated successfully!",
+  adminNotUpdated: "Admin could not updated!",
+  nothingUpdated: "Nothing to update!",
+  countryHasNoServiceAvailable:
+    "Currently, service is not available in this country!",
+};

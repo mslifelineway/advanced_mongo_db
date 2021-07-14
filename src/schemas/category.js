@@ -3,14 +3,14 @@ exports.categorySchemaObj = {
 	name: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 		min: 3,
 		max: 100,
 	},
 	slug: {
 		type: String,
 		trim: true,
-		require: true,
+		required: true,
 		min: 3,
 		unique: true,
 		index: true,
@@ -42,11 +42,11 @@ exports.categorySchemaObj = {
 	created_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'admins',
-		require: true,
+		required: true,
 	},
 	updated_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'admins',
-		require: true,
+		required: true,
 	},
 };

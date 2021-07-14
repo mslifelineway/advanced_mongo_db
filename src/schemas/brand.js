@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 exports.brandSchemaObj = {
 	name: {
 		type: String,
-		require: true,
+		required: true,
 		trim: true,
 	},
 	slug: {
 		type: String,
-		require: true,
+		required: true,
 		trim: true,
 		unique: true,
 		index: true,
@@ -17,11 +17,11 @@ exports.brandSchemaObj = {
 	created_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'users',
-		require: true,
+		required: true,
 	},
 	updated_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'users',
-		require: true,
+		required: true,
 	},
 };
