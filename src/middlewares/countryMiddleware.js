@@ -9,47 +9,78 @@ exports.validateSchema = async (req, res, next) => {
     await countrySchema().validateAsync(req.body);
     next();
   } catch (e) {
-    if (JSON.stringify(e) === "{}") {
-      return res.status(statusCodes.badRequest).json({ error: e.toString() });
+    if (e.details) {
+      const details = e.details[0];
+      e.status = statusCodes.unproccessible;
+      if (details.type === "any.required") e.status = statusCodes.badRequest;
+      e.message = details.message;
     }
-    const { details } = e;
-    return res.status(statusCodes.badRequest).json({
-      error: details ? details[0].message : errors.somethingSeemsWrong,
-    });
+    next(e);
   }
 };
 
 exports.validateCountryStatusUpdateSchema = (req, res, next) => {
   const { is_active } = req.body;
-  if (typeof is_active === "boolean" || [0, 1].includes(is_active)) {
+  if (typeof is_active === "boolean") {
     return next();
   }
-  if (status) {
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.invalidCountryStatus });
+  if (is_active) {
+    return next({ message: messages.invalidCountryStatus });
   }
-
-  return res
-    .status(statusCodes.badRequest)
-    .json({ error: messages.countryStatusRequired });
+  return next({
+    message: messages.countryStatusRequired,
+    status: statusCodes.badReuest,
+  });
 };
 exports.validateCountryUpdateSchema = async (req, res, next) => {
   try {
     if (Object.keys(req.body).length === 0) {
-      return res
-        .status(statusCodes.noContent)
-        .json({ message: messages.nothingUpdated });
+      return res.status(statusCodes.success).json({
+        message: messages.nothingUpdated,
+      });
     }
     await updateCountrySchema().validateAsync(req.body);
     next();
   } catch (e) {
-    if (Object.keys(e).length === 0) {
-      return res.status(statusCodes.badRequest).json({ error: e.toString() });
+    if (e.details) {
+      const details = e.details[0];
+      e.status = statusCodes.unproccessible;
+      if (details.type === "any.required") e.status = statusCodes.badRequest;
+      e.message = details.message;
     }
-    const { details } = e;
-    return res.status(statusCodes.badRequest).json({
-      error: details ? details[0].message : errors.somethingSeemsWrong,
+    next(e);
+  }
+};
+
+exports.validateCountryCode = (req, res, next) => {
+  const { code } = req.params;
+
+  if (!code) {
+    if (typeof code === "undefined")
+    return next({
+      message: messages.countryCodeRequired,
+      status: statusCodes.badRequest,
+    });
+    return next({
+      message: messages.countryCodeEmpty,
+      status: statusCodes.unproccessible,
     });
   }
+  return next();
+};
+
+exports.validateCountrySlug = (req, res, next) => {
+  const { slug } = req.params;
+  if (!slug) {
+    if (typeof slug === "undefined")
+      return next({
+        message: messages.countrySlugRequired,
+        status: statusCodes.badRequest,
+      });
+    return next({
+      message: messages.countrySlugEmpty,
+      status: statusCodes.unproccessible,
+    });
+  }
+  return next();
 };

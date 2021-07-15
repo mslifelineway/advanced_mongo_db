@@ -6,6 +6,7 @@ exports.statusCodes = {
   unauthorized: 401,
   forbidden: 402,
   notFound: 404,
+  unproccessible: 422,
   methodsNotAllowed: 405,
   lengthRequired: 411,
   uriTooLarge: 414,
@@ -57,4 +58,10 @@ exports.messages = {
   invalidCountryStatus:
     "Please provide the valid status value! only boolean value allowed.",
   countryNotUpdated: "Country couldn't update!",
+  emailMissing: "Email is required!",
+  passwordMissing: "Password is required!",
+  countryCodeRequired: "Country code is required!",
+  countryCodeEmpty: "Country code should not be empty!",
+  countrySlugRequired: "Country slug is required!",
+  countrySlugEmpty: "Country slug should not be empty!",
 };

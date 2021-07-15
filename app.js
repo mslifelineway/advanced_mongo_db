@@ -3,6 +3,7 @@ require('./src/database/mongoose');
 const config = require('config');
 const express = require('express');
 const fs = require('fs');
+const { errors, statusCodes } = require('./src/utls/constants');
 const router = express.Router();
 
 const port = config.get('server.port');
@@ -20,6 +21,12 @@ fs.readdirSync(__dirname + '/src/routes').forEach(function (file) {
 	app.use('/api', route);
 });
 
+app.use((err, req, res, next) => {
+	res.status(err.status || statusCodes.internalServerError);
+	console.log('error messages----> ')
+	console.log('error messages----> ', JSON.stringify(err))
+	return res.json({error: { status: err.status || statusCodes.internalServerError, message: err.message || errors.somethingSeemsWrong }})
+});
 app.listen(port, host, (err) => {
 	if (err) {
 	console.log('\n--------------------------------------------------');

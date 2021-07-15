@@ -1,8 +1,8 @@
 const { _copy } = require("../helpers/helpers");
 const { UserModel } = require("../models");
-const { statusCodes, messages, errors } = require("../utls/constants");
+const { statusCodes, messages } = require("../utls/constants");
 
-exports.saveUser = async (req, res) => {
+exports.saveUser = async (req, res, next) => {
   try {
     const savedUser = await new UserModel(req.body).save();
     if (savedUser) {
@@ -10,80 +10,83 @@ exports.saveUser = async (req, res) => {
         .status(statusCodes.created)
         .json({ message: messages.userCreated, user: _copy(savedUser) });
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.userNotCreated });
+    return next({
+      message: messages.messages.userNotCreated,
+    });
   } catch (e) {
     if (e && e.code === 11000) {
-      return res
-        .status(statusCodes.success)
-        .json({ message: messages.userAlreadyExists });
+      e.status = statusCodes.success;
+      e.message = messages.userAlreadyExists;
     }
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    next(e);
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateUser = async (req, res, next) => {
   try {
     const updatedUser = await UserModel.findOneAndUpdate(
       { _id: req.body.id },
       req.body
     );
     if (updatedUser) {
-      return res
-        .status(statusCodes.success)
-        .json({ message: messages.userUpdated, user: _copy(updatedUser) });
+      return res.status(statusCodes.noContent).send();
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.userNotUpdated });
-  } catch (e) {
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
+    return next({
+      message: messages.userNotExists,
+      status: statusCodes.notFound,
     });
+  } catch (e) {
+    const { path } = e;
+    if (path) {
+      e.message = messages.invalidUserId;
+    }
+    next(e);
   }
 };
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await UserModel.find({});
+    const users = await UserModel.findA({});
     return res
       .status(statusCodes.success)
       .json({ users: _copy(users), message: messages.allUsersFetched });
   } catch (e) {
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    next(e);
   }
 };
-exports.getUserById = async (req, res) => {
+exports.getUserById = async (req, res, next) => {
   try {
     const user = await UserModel.findOne({ _id: req.params.id });
-    return res
-      .status(statusCodes.success)
-      .json({ users: _copy(user), message: messages.userFetched });
+    if (user)
+      return res
+        .status(statusCodes.success)
+        .json({ users: _copy(user), message: messages.userFetched });
+    return next({
+      message: messages.userNotExists,
+      status: statusCodes.notFound,
+    });
   } catch (e) {
     const { path } = e;
     if (path) {
-      return res
-        .status(statusCodes.badRequest)
-        .json({ error: messages.invalidUserId });
+      e.message = messages.invalidUserId;
     }
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    return next(e);
+  }
+};
+exports.login = async (req, res, next) => {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+    if (!user) {
+      return next({
+        message: messages.userNotExists,
+        status: statusCodes.notFound,
+      });
+    }
+    //TODO : further process
+  } catch (e) {
+    const { path } = e;
+    if (path) {
+      e.message = messages.invalidUserId;
+    }
+    return next(e);
   }
 };

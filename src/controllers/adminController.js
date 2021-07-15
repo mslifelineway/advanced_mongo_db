@@ -2,7 +2,7 @@ const { _copy } = require("../helpers/helpers");
 const { AdminModel } = require("../models");
 const { statusCodes, messages, errors } = require("../utls/constants");
 
-exports.saveAdmin = async (req, res) => {
+exports.saveAdmin = async (req, res, next) => {
   try {
     const savedAdmin = await new AdminModel(req.body).save();
     if (savedAdmin) {
@@ -10,25 +10,19 @@ exports.saveAdmin = async (req, res) => {
         .status(statusCodes.created)
         .json({ message: messages.adminCreated, admin: _copy(savedAdmin) });
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.adminNotCreated });
+    return next({
+      message: messages.messages.adminNotCreated,
+    });
   } catch (e) {
     if (e && e.code === 11000) {
-      return res
-        .status(statusCodes.success)
-        .json({ message: messages.adminAlreadyExists });
+      e.status = statusCodes.success;
+      e.message = messages.adminAlreadyExists;
     }
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    next(e);
   }
 };
 
-exports.updateAdmin = async (req, res) => {
+exports.updateAdmin = async (req, res, next) => {
   try {
     const updatedAdmin = await AdminModel.findOneAndUpdate(
       { _id: req.body.id },
@@ -39,37 +33,35 @@ exports.updateAdmin = async (req, res) => {
         .status(statusCodes.success)
         .json({ message: messages.adminUpdated, admin: _copy(updatedAdmin) });
     }
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.adminNotExists });
-  } catch (e) {
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
+    return next({
+      message: messages.adminNotExists,
+      status: statusCodes.notFound,
     });
-  }
-};
-
-exports.getAdminById = async (req, res) => {
-  try {
-    const admin = await AdminModel.findOne({ _id: req.params.id });
-    return res
-      .status(statusCodes.success)
-      .json({ message: messages.adminFetched, admin: _copy(admin) });
   } catch (e) {
     const { path } = e;
     if (path) {
-      return res
-        .status(statusCodes.badRequest)
-        .json({ error: messages.invalidAdminId });
+      e.message = messages.invalidAdminId;
     }
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
+    next(e);
+  }
+};
+
+exports.getAdminById = async (req, res, next) => {
+  try {
+    const admin = await AdminModel.findOne({ _id: req.params.id });
+    if (admin)
+      return res
+        .status(statusCodes.success)
+        .json({ message: messages.adminFetched, admin: _copy(admin) });
+    return next({
+      message: messages.adminNotExists,
+      status: statusCodes.notFound,
     });
+  } catch (e) {
+    const { path } = e;
+    if (path) {
+      e.message = messages.invalidUserId;
+    }
+    next(e);
   }
 };

@@ -3,11 +3,13 @@ const {
   updateUser,
   getAllUsers,
   getUserById,
+  login
 } = require("../controllers/userController");
 const {
   validateSchema,
   validateUpdateSchema,
   checkReqiuredDataToUpdate,
+  loginValidation,
 } = require("../middlewares/userMiddleware");
 
 module.exports = (router) => {
@@ -20,5 +22,6 @@ module.exports = (router) => {
   );
   router.get("/users", getAllUsers);
   router.get("/user/:id", getUserById);
+  router.post("/login", loginValidation, login)
   return router;
 };

@@ -2,7 +2,7 @@ const { _slugify, _copy } = require("../helpers/helpers");
 const { CountryModel } = require("../models");
 const { statusCodes, errors, messages } = require("../utls/constants");
 
-exports.saveCountry = async (req, res) => {
+exports.saveCountry = async (req, res, next) => {
   try {
     const country = req.body;
     country.slug = _slugify(country.name);
@@ -11,45 +11,40 @@ exports.saveCountry = async (req, res) => {
       return res
         .status(statusCodes.created)
         .json({ message: messages.countrySaved, user: _copy(savedCountry) });
-    return res
-      .status(statusCodes.badRequest)
-      .json({ error: messages.countryNotSaved });
+    return next({
+      message: messages.messages.countryNotSaved,
+    });
   } catch (e) {
     if (e && e.code === 11000) {
-      if (e.keyPattern && e.keyPattern.slug)
-        return res
-          .status(statusCodes.success)
-          .json({ message: messages.countryAlreadyExists });
-      return res
-        .status(statusCodes.success)
-        .json({ message: messages.countryExistsByCode });
+      if (e.keyPattern && e.keyPattern.slug) {
+        messages.countryAlreadyExists;
+        return next({
+          message: messages.countryAlreadyExists,
+          status: statusCodes.success,
+        });
+      }
+      return next({
+        message: messages.countryAlreadyExists,
+        status: statusCodes.countryExistsByCode,
+      });
     }
-
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    e.message = errors.somethingSeemsWrong;
+    return next(e);
   }
 };
 
-exports.getCountries = async (req, res) => {
+exports.getCountries = async (req, res, next) => {
   try {
     return res.status(statusCodes.success).json({
       message: messages.countriesFetched,
       countries: _copy(await CountryModel.find({})),
     });
   } catch (e) {
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    e.message = errors.somethingSeemsWrong;
+    return next(e);
   }
 };
-exports.getCountryById = async (req, res) => {
+exports.getCountryById = async (req, res, next) => {
   try {
     return res.status(statusCodes.success).json({
       message: messages.countryFetched,
@@ -58,19 +53,12 @@ exports.getCountryById = async (req, res) => {
   } catch (e) {
     const { path } = e;
     if (path) {
-      return res
-        .status(statusCodes.badRequest)
-        .json({ error: messages.notValidCountryId });
+      e.message = messages.invalidCountryId;
     }
-    return res.status(statusCodes.badRequest).json({
-      error:
-        e.toString() && e.toString() !== ""
-          ? e.toString()
-          : errors.somethingSeemsWrong,
-    });
+    next(e);
   }
 };
-exports.getCountryBySlug = async (req, res) => {
+exports.getCountryBySlug = async (req, res, next) => {
   try {
     return res.status(statusCodes.success).json({
       message: messages.countryFetched,
@@ -85,7 +73,7 @@ exports.getCountryBySlug = async (req, res) => {
     });
   }
 };
-exports.getCountryByCode = async (req, res) => {
+exports.getCountryByCode = async (req, res, next) => {
   try {
     return res.status(statusCodes.success).json({
       message: messages.countryFetched,
@@ -101,7 +89,7 @@ exports.getCountryByCode = async (req, res) => {
   }
 };
 
-exports.updateCountryStatusById = async (req, res) => {
+exports.updateCountryStatusById = async (req, res, next) => {
   try {
     const updatedCountry = await CountryModel.findOneAndUpdate(
       {
@@ -128,7 +116,7 @@ exports.updateCountryStatusById = async (req, res) => {
   }
 };
 
-exports.updateCountryById = async (req, res) => {
+exports.updateCountryById = async (req, res, next) => {
   try {
     const country = req.body;
     country.slug = _slugify(country.name);
