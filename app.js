@@ -23,8 +23,6 @@ fs.readdirSync(__dirname + '/src/routes').forEach(function (file) {
 
 app.use((err, req, res, next) => {
 	res.status(err.status || statusCodes.internalServerError);
-	console.log('error messages----> ')
-	console.log('error messages----> ', JSON.stringify(err))
 	return res.json({error: { status: err.status || statusCodes.internalServerError, message: err.message || errors.somethingSeemsWrong }})
 });
 app.listen(port, host, (err) => {

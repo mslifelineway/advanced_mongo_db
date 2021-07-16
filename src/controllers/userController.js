@@ -59,7 +59,7 @@ exports.getUserById = async (req, res, next) => {
     if (user)
       return res
         .status(statusCodes.success)
-        .json({ users: _copy(user), message: messages.userFetched });
+        .json({ users: _copy(user.toJSON()), message: messages.userFetched });
     return next({
       message: messages.userNotExists,
       status: statusCodes.notFound,
@@ -72,17 +72,57 @@ exports.getUserById = async (req, res, next) => {
     return next(e);
   }
 };
+
 exports.login = async (req, res, next) => {
   try {
-    const user = await UserModel.findOne({ email: req.body.email });
+    const { email, password } = req.body;
+    const user = await UserModel.findByCredentials(email, password);
     if (!user) {
       return next({
-        message: messages.userNotExists,
-        status: statusCodes.notFound,
+        message: messages.wrongCredentials,
+        status: statusCodes.unauthorized,
       });
     }
-    //TODO : further process
+    if(!user.is_active) {
+      return next({ message: messages.accountDisabled})
+    }
+    const { refreshToken, refreshAuthTokenError, saveSessionError } =
+      await user.createSession();
+    if (refreshAuthTokenError || !refreshToken) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.refreshAuthTokenNotGenerated,
+      });
+    }
+    if (saveSessionError) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.sessionCouldNotSaved,
+      });
+    }
+
+    const { accessToken, accessAuthTokenError } =
+      await user.generateAccessAuthToken();
+    if (accessAuthTokenError || !accessToken) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.accessTokenNotGenerated,
+      });
+    }
+
+    return res
+      .header("x-refresh-token", refreshToken)
+      .header("x-access-token", accessToken)
+      .status(statusCodes.success)
+      .json({
+        message: messages.authenticated,
+        user,
+      });
   } catch (e) {
+    if (e.status === statusCodes.notFound) {
+      e.message = messages.userNotExists;
+      return next(e);
+    }
     const { path } = e;
     if (path) {
       e.message = messages.invalidUserId;

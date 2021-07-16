@@ -42,4 +42,16 @@ exports.userSchemaObj = {
   deactivated_at: {
     type: Date,
   },
+  sessions: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+      expiresAt: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
 };

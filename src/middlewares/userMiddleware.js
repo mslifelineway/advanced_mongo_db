@@ -2,6 +2,7 @@ const {
   userSchema,
   validatePhoneNumberWithCountry,
   updateUserSchema,
+  userLoginSchema,
 } = require("../schemaValidations/userSchemaValidation");
 const { findCountryCodeById } = require("../services/countryService");
 const { findCountryByUserId } = require("../services/userService");
@@ -98,22 +99,17 @@ exports.validateUpdateSchema = async (req, res, next) => {
     next(e);
   }
 };
-exports.loginValidation = (req, res, next) => {
-  const { email, password } = req.body;
-  if (email && password) {
-    return next();
+exports.loginValidation = async (req, res, next) => {
+  try {
+    await userLoginSchema().validateAsync(req.body);
+    next();
+  } catch (e) {
+    if (e.details) {
+      const details = e.details[0];
+      e.status = statusCodes.unproccessible;
+      if (details.type === "any.required") e.status = statusCodes.badRequest;
+      e.message = details.message;
+    }
+    next(e);
   }
-  if (!email) {
-    return next({
-      message: messages.emailMissing,
-      status: statusCodes.badRequest,
-    });
-  }
-  if (!password) {
-    return next({
-      message: messages.emailMissing,
-      status: statusCodes.badRequest,
-    });
-  }
-  return next({ message: errors.somethingSeemsWrong });
 };

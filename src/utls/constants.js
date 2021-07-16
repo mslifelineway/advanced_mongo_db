@@ -64,4 +64,13 @@ exports.messages = {
   countryCodeEmpty: "Country code should not be empty!",
   countrySlugRequired: "Country slug is required!",
   countrySlugEmpty: "Country slug should not be empty!",
+  emailEmpty: "Email should not be empty!",
+  passwordEmpty: "Password should not be empty!",
+  wrongCredentials: "Wrong credentials!",
+  refreshAuthTokenNotGenerated: "Oops! Refresh auth token couldn't generate!",
+  sessionCouldNotSaved: "Oops! Session couldn't save to database!",
+  accessTokenNotGenerated: "Oops! access token couldn't generate!",
+  authenticated: "Authenticated successfully!",
+  accountDisabled:
+    "Sorry! your account is disabled. Please contact to the administrator.",
 };
