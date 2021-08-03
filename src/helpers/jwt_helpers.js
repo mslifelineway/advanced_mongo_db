@@ -14,3 +14,14 @@ exports.saveUserSessionToDatabase = async (user, refreshToken) => {
     return { saveSessionError };
   }
 };
+
+exports.saveAdminSessionToDatabase = async (admin, refreshToken) => {
+  let expiresAt = this.generateRefreshTokenExpiryTime();
+  admin.sessions.push({ token: refreshToken, expiresAt });
+  try {
+    const savedSession = await admin.save();
+    return { savedSession };
+  } catch (saveSessionError) {
+    return { saveSessionError };
+  }
+};

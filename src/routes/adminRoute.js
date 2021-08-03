@@ -1,8 +1,14 @@
-const { saveAdmin, updateAdmin, getAdminById } = require("../controllers/adminController");
+const {
+  saveAdmin,
+  updateAdmin,
+  getAdminById,
+  login,
+} = require("../controllers/adminController");
 const {
   validateSchema,
   validateUpdateSchema,
   checkReqiuredDataToUpdate,
+  loginValidation,
 } = require("../middlewares/adminMiddleware");
 
 module.exports = (router) => {
@@ -14,5 +20,6 @@ module.exports = (router) => {
     updateAdmin
   );
   router.get("/admin/:id", getAdminById);
+  router.post("/login", loginValidation, login);
   return router;
 };

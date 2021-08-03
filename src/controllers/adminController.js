@@ -65,3 +65,61 @@ exports.getAdminById = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const admin = await AdminModel.findByCredentials(email, password);
+    if (!admin) {
+      return next({
+        message: messages.wrongCredentials,
+        status: statusCodes.unauthorized,
+      });
+    }
+    if (!admin.is_active) {
+      return next({ message: messages.accountDisabled });
+    }
+    const { refreshToken, refreshAuthTokenError, saveSessionError } =
+      await admin.createSession();
+    if (refreshAuthTokenError || !refreshToken) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.refreshAuthTokenNotGenerated,
+      });
+    }
+    if (saveSessionError) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.sessionCouldNotSaved,
+      });
+    }
+
+    const { accessToken, accessAuthTokenError } =
+      await admin.generateAccessAuthToken();
+    if (accessAuthTokenError || !accessToken) {
+      return next({
+        status: statusCodes.internalServerError,
+        message: messages.accessTokenNotGenerated,
+      });
+    }
+
+    return res
+      .header("x-refresh-token", refreshToken)
+      .header("x-access-token", accessToken)
+      .status(statusCodes.success)
+      .json({
+        message: messages.authenticated,
+        admin,
+      });
+  } catch (e) {
+    if (e.status === statusCodes.notFound) {
+      e.message = messages.adminNotExists;
+      return next(e);
+    }
+    const { path } = e;
+    if (path) {
+      e.message = messages.invalidAdminId;
+    }
+    return next(e);
+  }
+};
