@@ -5,7 +5,7 @@ exports.productSchemaObj = {
 		trim: true,
 		required: true,
 		min: 3,
-		max: 100,
+		max: 200,
 	},
 	quantity: {
 		type: Number,
@@ -64,9 +64,16 @@ exports.productSchemaObj = {
 	],
 	rating: {
 		type: Number,
+		default: 0,
 	},
-	is_bestselling: Boolean,
-	is_new_arrival: Boolean,
+	is_bestselling: {
+		type: Boolean,
+		default: false,
+	},
+	is_new_arrival: {
+		type: Boolean,
+		default: true,
+	},
 	related_products: [
 		{
 			product: {
@@ -75,7 +82,7 @@ exports.productSchemaObj = {
 			},
 		},
 	],
-	product_tags: Array,
+	tags: Array,
 	created_by: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'admins',
