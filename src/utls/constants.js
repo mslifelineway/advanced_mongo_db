@@ -17,6 +17,11 @@ exports.statusCodes = {
   serviceUnavailable: 503,
   gatewayTimeout: 504,
 };
+
+exports.roles = {
+  admin: "ADMIN",
+  user: "USER",
+};
 exports.errors = {
   invalidPhoneNumber: "Invalid phone number!",
   somethingSeemsWrong: "Oops! something seems wrong.",
@@ -73,4 +78,9 @@ exports.messages = {
   authenticated: "Authenticated successfully!",
   accountDisabled:
     "Sorry! your account is disabled. Please contact to the administrator.",
+  productCreated: "Product created successfully!",
+  productNotCreated: "Product couldn't created!",
+  productAlreadyCreated: "Product already created!",
+  authorizationTokenRequired: "Please provide the authorization token.",
+  invalidAuthorizationToken: "Invalid authorization token.",
 };

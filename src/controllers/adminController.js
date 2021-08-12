@@ -11,7 +11,7 @@ exports.saveAdmin = async (req, res, next) => {
         .json({ message: messages.adminCreated, admin: _copy(savedAdmin) });
     }
     return next({
-      message: messages.messages.adminNotCreated,
+      message: messages.adminNotCreated,
     });
   } catch (e) {
     if (e && e.code === 11000) {

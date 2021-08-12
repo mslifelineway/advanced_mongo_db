@@ -3,7 +3,7 @@ const { userSchemaObj } = require("../schemas/user");
 const bcrypt = require("bcryptjs");
 const { schemaOptions } = require("../helpers/helpers");
 const _ = require("lodash");
-const { messages, statusCodes } = require("../utls/constants");
+const { messages, statusCodes, roles } = require("../utls/constants");
 const crypto = require("crypto");
 const { saveUserSessionToDatabase } = require("../helpers/jwt_helpers");
 const jwt = require("jsonwebtoken");
@@ -71,7 +71,7 @@ userSchema.methods.createSession = async function () {
 userSchema.methods.generateAccessAuthToken = async function () {
   try {
     const accessToken = await jwt.sign(
-      { _id: this._id.toHexString() },
+      { _id: this._id.toHexString(), role: roles.user },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );

@@ -12,7 +12,7 @@ exports.saveCountry = async (req, res, next) => {
         .status(statusCodes.created)
         .json({ message: messages.countrySaved, user: _copy(savedCountry) });
     return next({
-      message: messages.messages.countryNotSaved,
+      message: messages.countryNotSaved,
     });
   } catch (e) {
     if (e && e.code === 11000) {

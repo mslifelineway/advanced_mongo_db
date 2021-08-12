@@ -9,6 +9,10 @@ const {
   updateAdminSchema,
   adminLoginSchema,
 } = require("../schemaValidations/adminSchemaValidation");
+const jwt = require("jsonwebtoken");
+const adminModel = require("../models/adminModel");
+const { AdminModel } = require("../models");
+const moment = require("moment");
 
 exports.validateSchema = async (req, res, next) => {
   try {
@@ -111,5 +115,36 @@ exports.loginValidation = async (req, res, next) => {
       e.message = details.message;
     }
     next(e);
+  }
+};
+
+exports.authenticate = async (req, res, next) => {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res
+      .status(401)
+      .json({ message: messages.authorizationTokenRequired });
+  }
+  const token = authorization.split(" ")[1];
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: messages.authorizationTokenRequired });
+  try {
+    const admin = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log("====> admin: ", admin);
+    if (!admin) {
+    }
+    const currentDate = moment(new Date());
+    const { _id, role, iat, exp } = admin;
+    const hasTokenExpired = AdminModel.hasRefreshTokenExpired(exp);
+    console.log("-----> hasTokenExpired", hasTokenExpired);
+    //TODO: CHECK FOR ROLE
+    req.admin = admin;
+    return next();
+  } catch (e) {
+    return res
+      .status(401)
+      .json({ message: messages.invalidAuthorizationToken });
   }
 };

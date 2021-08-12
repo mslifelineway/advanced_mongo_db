@@ -3,10 +3,11 @@ const { adminSchemaObj } = require("../schemas/admin");
 const bcrypt = require("bcryptjs");
 const { schemaOptions } = require("../helpers/helpers");
 const _ = require("lodash");
-const { statusCodes } = require("../utls/constants");
+const { statusCodes, roles } = require("../utls/constants");
 const crypto = require("crypto");
 const { saveAdminSessionToDatabase } = require("../helpers/jwt_helpers");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 
 const adminSchema = new mongoose.Schema(adminSchemaObj, schemaOptions);
 
@@ -29,6 +30,17 @@ adminSchema.statics.findByCredentials = async function (email, password) {
   const check = await bcrypt.compare(password, admin.password);
   if (check) {
     return admin;
+  }
+};
+
+adminSchema.statics.hasRefreshTokenExpired = (expiresAt) => {
+  let secondsSinceEpoch = Date.now() / 1000;
+  const currentDate = moment(new Date());
+  console.log('===> expiresAt, currentDate : ', moment(expiresAt), currentDate, moment(expiresAt) > currentDate)
+  if (moment(expiresAt) > currentDate) {
+    return false;
+  } else {
+    return true;
   }
 };
 
@@ -71,7 +83,7 @@ adminSchema.methods.createSession = async function () {
 adminSchema.methods.generateAccessAuthToken = async function () {
   try {
     const accessToken = await jwt.sign(
-      { _id: this._id.toHexString() },
+      { _id: this._id.toHexString(), role: roles.admin },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );

@@ -11,7 +11,7 @@ exports.saveUser = async (req, res, next) => {
         .json({ message: messages.userCreated, user: _copy(savedUser) });
     }
     return next({
-      message: messages.messages.userNotCreated,
+      message: messages.userNotCreated,
     });
   } catch (e) {
     if (e && e.code === 11000) {
